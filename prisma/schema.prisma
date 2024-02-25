@@ -304,7 +304,7 @@ model Invoice {
   sesProvided        Boolean?
   costProvided       Boolean?
 
-  createdDate        DateTime
+  createdDate        DateTime     @default(now())
   receivedDate       DateTime?
   status             String
   unansweredComments Boolean
