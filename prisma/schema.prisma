@@ -1,0 +1,417 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  uuid                 String   @id @default(uuid())
+  email                String   @unique
+  cognitoId            String   @unique
+  firstName            String
+  lastName             String
+  username             String   @unique
+  department           String?
+  isActive             Boolean  @default(true)
+  phoneNumber          String?
+  commentNotifications Boolean  @default(true)
+  emailNotifications   Boolean  @default(true)
+  notifSettings        Json?    @default("{\"email\":0,\"comment\":0,\"po_email\":0,\"po_inapp\":0}")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  supplier            Supplier?             @relation(fields: [supplierUuid], references: [uuid])
+  role                Role                  @relation(fields: [roleUuid], references: [uuid])
+  roleUuid            String
+  supplierUuid        String?
+  userGotNotification UserGotNotification[]
+  comment             Comment[]
+  POADocument         POADocument[]
+  tableViewSettings   TableSettings[]
+  lastLogin           DateTime?
+  POAuditLog          POAuditLog[]
+}
+
+model Role {
+  uuid       String @id @default(uuid())
+  name       String @unique
+  privileges Json
+  type       String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User[]
+}
+
+model Supplier {
+  uuid               String  @id @default(uuid())
+  name               String
+  tradingName        String?
+  accountNumber      String  @unique
+  ABN                String?
+  streetAddress      String?
+  suburb             String?
+  city               String?
+  state              String?
+  postCode           String?
+  countryCode        String?
+  country            String?
+  postingBlockStatus Boolean
+  paymentBlockStatus Boolean
+  isActive           Boolean
+  ACN                String?
+  paymentTerms       String?
+  POEmail            String?
+  remittanceEmail    String?
+  generalEmail       String?
+  shipping           String?
+  taxCountryRegion   String?
+
+  companyCode String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  supplierAdresses SupplierAddress[]
+  users            User[]
+  bankingData      BankingData[]
+  PODocument       PODocument[]
+  POADocument      POADocument[]
+  Invoice          Invoice[]
+  POVersions       POVersion[]
+}
+
+model SupplierAddress {
+  uuid           String  @id @default(uuid())
+  orderingSiteId String  @unique
+  city           String
+  state          String
+  countryCode    String
+  postCode       String
+  streetAddress  String
+  isActive       Boolean
+
+  Supplier     Supplier? @relation(fields: [supplierUuid], references: [uuid])
+  supplierUuid String?
+}
+
+model BankingData {
+  uuid              String   @id @default(uuid())
+  remitToCode       String
+  BSB               String?
+  accountNumber     String
+  accountHolderName String
+  validToDate       DateTime
+  isActive          Boolean
+  supplier          Supplier @relation(fields: [supplierUuid], references: [uuid])
+  supplierUuid      String
+
+  @@unique([accountNumber, supplierUuid])
+}
+
+model Comment {
+  uuid       String  @id @default(uuid())
+  authorUuid String
+  message    String
+  visibility String  @default("internal") //internal, external
+  POUuid     String?
+  revision   String? @default("")
+
+  author        User           @relation(fields: [authorUuid], references: [uuid])
+  PODocument    PODocument?    @relation(fields: [POUuid], references: [uuid])
+  notifications Notification[]
+  attachments   Attachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attachment {
+  uuid        String @id @default(uuid())
+  commentUuid String
+  fileName    String
+
+  Comment Comment @relation(fields: [commentUuid], references: [uuid])
+}
+
+model Notification {
+  uuid           String  @id @default(uuid())
+  message        String?
+  category       String
+  type           String
+  PODocumentUuid String?
+  commentUuid    String?
+  fileUuid       String?
+
+  comment             Comment?              @relation(fields: [commentUuid], references: [uuid])
+  PODocument          PODocument?           @relation(fields: [PODocumentUuid], references: [uuid])
+  POFile              POFile?               @relation(fields: [fileUuid], references: [uuid])
+  UserGotNotification UserGotNotification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserGotNotification {
+  uuid             String   @id @default(uuid())
+  read             Boolean
+  notificationUuid String
+  userUuid         String
+  tagged           Boolean?
+  removed          Boolean  @default(false) //if user removed notification
+
+  notification Notification @relation(fields: [notificationUuid], references: [uuid])
+  user         User         @relation(fields: [userUuid], references: [uuid])
+  readAt       DateTime?
+}
+
+model PODocument {
+  uuid               String    @id @default(uuid())
+  orderType          String //GoodsOrder or ServicesOrder
+  purchasingEntity   String
+  purchasingPlant    String
+  supplierShipTo     String
+  pickUpInformation  String
+  billToName         String
+  billToEmail        String
+  orderNo            String    @unique
+  revision           String
+  PODate             DateTime
+  revisionDate       DateTime?
+  currency           String
+  procurementContact String
+  requester          String
+  agreementNo        String
+  paymentTerms       DateTime?
+  incoterms          String
+  additionalInfo     String?
+  totalExcludeTax    Decimal
+  //totalIncludedTax   Decimal
+  //totalTax           Decimal
+  supplierAccountNo  String?
+  status             String?   @default("Unacknowledged") //Unacknowledged, Acknowledged, Rejected, Completed
+  reminder           Boolean   @default(false)
+  executionArn       String?
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  supplier      Supplier?      @relation(fields: [supplierAccountNo], references: [accountNumber])
+  POItems       POItem[]
+  comments      Comment[]
+  notifications Notification[]
+  POADocument   POADocument[]
+  POAuditLog    POAuditLog[]
+  POFile        POFile[]
+  POVersions    POVersion[]
+}
+
+model POItem {
+  uuid                    String   @id @default(uuid())
+  itemNo                  Int
+  materialNumber          String
+  description             String?
+  manufacturersPartNumber String?
+  costElements            Json //Array of decimal numbers
+  quantity                Int
+  unit                    String
+  unitPrice               Decimal
+  discount                Decimal
+  extendedPrice           Decimal
+  finalDestination        String
+  supplierDueDate         DateTime
+  requisition             Int
+
+  PODocumentUuid String
+  PODocument     PODocument    @relation(fields: [PODocumentUuid], references: [uuid])
+  InvoiceLine    InvoiceLine[]
+}
+
+model POADocument {
+  uuid              String   @id @default(uuid())
+  orderNo           String
+  revision          String
+  acknowledgeDate   DateTime
+  supplierAccountNo String?
+  poDocumentUuid    String?
+  rejectReason      String?
+  userUuid          String?
+  status            String   @default("active") //active, inactive, rejected
+  csvResult         String?  @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  PODocument        PODocument?         @relation(fields: [poDocumentUuid], references: [uuid])
+  user              User?               @relation(fields: [userUuid], references: [uuid])
+  supplier          Supplier?           @relation(fields: [supplierAccountNo], references: [accountNumber])
+  poaItems          POAItem[]
+  Invoice_PODocumet Invoice_PODocumet[]
+  POFile            POFile[]
+}
+
+model POAItem {
+  uuid            String    @id @default(uuid())
+  itemNo          Int
+  supplierDueDate DateTime?
+  quantity        Int
+  unitPrice       Decimal
+  unit            String
+  changesReason   String
+
+  POADocument     POADocument? @relation(fields: [pOADocumentUuid], references: [uuid], onDelete: Cascade)
+  pOADocumentUuid String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice_PODocumet {
+  uuid            String      @id @default(uuid())
+  PODocument      POADocument @relation(fields: [pOADocumentUuid], references: [uuid])
+  pOADocumentUuid String
+  invoice         Invoice     @relation(fields: [invoiceUuid], references: [uuid])
+  invoiceUuid     String
+}
+
+model Invoice {
+  uuid                  String    @id @default(uuid())
+  invoiceNo             String    @unique
+  orderNo               String
+  createdDate           DateTime
+  receivedDate          DateTime?
+  status                String
+  unansweredComments    Boolean
+  disputeReason         String?
+  supplierAccountNumber String?
+  applicableWHT         Boolean?
+
+  invoiceLines      InvoiceLine[]
+  supplier          Supplier?           @relation(fields: [supplierAccountNumber], references: [accountNumber])
+  Invoice_PODocumet Invoice_PODocumet[]
+}
+
+model InvoiceLine {
+  uuid                 String   @id @default(uuid())
+  itemNo               Int
+  description          String?
+  supplierPartNumber   String?
+  unit                 String?
+  netWeight            String?
+  priceWeight          String?
+  quantity             Decimal?
+  total                Decimal?
+  poLine               String?
+  reviewReason         String?
+  serviceTimeSheetLine String?
+
+  POItemUuid  String?
+  POItem      POItem?  @relation(fields: [POItemUuid], references: [uuid])
+  Invoice     Invoice? @relation(fields: [invoiceUuid], references: [uuid])
+  invoiceUuid String?
+}
+
+model Settings {
+  uuid                       String   @id @default(uuid())
+  senderEmail                String   @default("")
+  maxRetryCount              Int      @default(3)
+  techSupportEmails          Json? //array of emails
+  businessNotifications      Json? //Object {moduleName: array of emails}
+  priceTolerance             Decimal  @default(0)
+  quantityTolerance          Int      @default(0)
+  defaultNotificationsLength Int      @default(10)
+  updatedAt                  DateTime @updatedAt
+}
+
+model TableSettings {
+  uuid           String @id @default(uuid())
+  name           String
+  table          String
+  viewSettings   Json
+  filterSettings Json?
+
+  user     User   @relation(fields: [userUuid], references: [uuid])
+  userUuid String
+}
+
+model POAuditLog {
+  uuid     String  @id @default(uuid())
+  event    String //created, updated, viewed, acknowledged, poa_csv_upload, poa_csv_error
+  userUuid String?
+  poUuid   String?
+  revision String?
+
+  user User?       @relation(fields: [userUuid], references: [uuid])
+  po   PODocument? @relation(fields: [poUuid], references: [uuid])
+
+  createdAt DateTime @default(now())
+}
+
+model POFile {
+  uuid     String  @id @default(uuid())
+  file     String
+  poUuid   String?
+  revision String?
+  type     String  @default("xml")
+  poaUuid  String?
+
+  createdAt DateTime @default(now())
+
+  po           PODocument?    @relation(fields: [poUuid], references: [uuid])
+  Notification Notification[]
+  poa          POADocument?   @relation(fields: [poaUuid], references: [uuid])
+}
+
+model POVersion {
+  uuid               String    @id @default(uuid())
+  poUuid             String
+  orderType          String //GoodsOrder or ServicesOrder
+  purchasingEntity   String
+  purchasingPlant    String
+  supplierShipTo     String
+  pickUpInformation  String
+  billToName         String
+  billToEmail        String
+  orderNo            String
+  revision           String
+  PODate             DateTime
+  revisionDate       DateTime?
+  currency           String
+  procurementContact String
+  requester          String
+  agreementNo        String
+  paymentTerms       DateTime?
+  incoterms          String
+  additionalInfo     String?
+  totalExcludeTax    Decimal
+  supplierAccountNo  String?
+
+  createdAt DateTime @default(now())
+
+  supplier Supplier?       @relation(fields: [supplierAccountNo], references: [accountNumber])
+  po       PODocument?     @relation(fields: [poUuid], references: [uuid])
+  POItems  POVersionItem[]
+}
+
+model POVersionItem {
+  uuid                    String   @id @default(uuid())
+  poVersionUuid           String
+  itemNo                  Int
+  materialNumber          String
+  description             String?
+  manufacturersPartNumber String?
+  costElements            Json //Array of decimal numbers
+  quantity                Int
+  unit                    String
+  unitPrice               Decimal
+  discount                Decimal
+  extendedPrice           Decimal
+  finalDestination        String
+  supplierDueDate         DateTime
+  requisition             Int
+
+  poVersion POVersion @relation(fields: [poVersionUuid], references: [uuid])
+}
