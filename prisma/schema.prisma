@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -80,7 +83,6 @@ model Supplier {
   bankingData      BankingData[]
   PODocument       PODocument[]
   POADocument      POADocument[]
-  Invoice          Invoice[]
   POVersions       POVersion[]
 }
 
@@ -207,6 +209,7 @@ model PODocument {
   POAuditLog    POAuditLog[]
   POFile        POFile[]
   POVersions    POVersion[]
+  Invoice       Invoice?
 }
 
 model POItem {
@@ -245,12 +248,11 @@ model POADocument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  PODocument        PODocument?         @relation(fields: [poDocumentUuid], references: [uuid])
-  user              User?               @relation(fields: [userUuid], references: [uuid])
-  supplier          Supplier?           @relation(fields: [supplierAccountNo], references: [accountNumber])
-  poaItems          POAItem[]
-  Invoice_PODocumet Invoice_PODocumet[]
-  POFile            POFile[]
+  PODocument PODocument? @relation(fields: [poDocumentUuid], references: [uuid])
+  user       User?       @relation(fields: [userUuid], references: [uuid])
+  supplier   Supplier?   @relation(fields: [supplierAccountNo], references: [accountNumber])
+  poaItems   POAItem[]
+  POFile     POFile[]
 }
 
 model POAItem {
@@ -269,49 +271,73 @@ model POAItem {
   updatedAt DateTime @updatedAt
 }
 
-model Invoice_PODocumet {
-  uuid            String      @id @default(uuid())
-  PODocument      POADocument @relation(fields: [pOADocumentUuid], references: [uuid])
-  pOADocumentUuid String
-  invoice         Invoice     @relation(fields: [invoiceUuid], references: [uuid])
-  invoiceUuid     String
-}
-
 model Invoice {
-  uuid                  String    @id @default(uuid())
-  invoiceNo             String    @unique
-  orderNo               String
-  createdDate           DateTime
-  receivedDate          DateTime?
-  status                String
-  unansweredComments    Boolean
-  disputeReason         String?
-  supplierAccountNumber String?
-  applicableWHT         Boolean?
+  uuid               String    @id @default(uuid())
+  invoiceNo          String    @unique
+  orderNo            String
+  orgInvNo           String?
+  orgInvDate         DateTime?
+  settlementDate     DateTime?
+  remitToCode        String?
+  vendorNo           String?
+  channel            String?
+  submittedby        String?
+  invoiceDate        DateTime?
+  netTotal           Decimal
+  totalTax           Decimal
+  total              Decimal
+  currency           String
+  taxCode            String
+  freight            String?
+  freightTax         String?
+  freightCurrency    String?
+  freightTaxCode     String?
+  addCharges         Decimal?
+  addChargesTax      Decimal?
+  addChargesCurrency String?
+  whtAmount          Decimal?
+  whtBase            Decimal?
+  whtCountry         String?
+  whtTaxType         String?
+  whtTaxCode         String?
+  whtTaxCodeDesc     String?
+  sesProvided        Boolean?
+  costProvided       Boolean?
 
-  invoiceLines      InvoiceLine[]
-  supplier          Supplier?           @relation(fields: [supplierAccountNumber], references: [accountNumber])
-  Invoice_PODocumet Invoice_PODocumet[]
+  createdDate        DateTime
+  receivedDate       DateTime?
+  status             String
+  unansweredComments Boolean
+  disputeReason      String?
+  applicableWHT      Boolean?
+  poUuid             String?       @unique
+  updatedAt          DateTime      @updatedAt
+  po                 PODocument?   @relation(fields: [poUuid], references: [uuid])
+  InvoiceLine        InvoiceLine[]
 }
 
 model InvoiceLine {
   uuid                 String   @id @default(uuid())
   itemNo               Int
+  imrNo                String?
   description          String?
+  taxCode              String?
+  price                Decimal
+  taxValue             Decimal
   supplierPartNumber   String?
-  unit                 String?
+  unit                 String? //uom
   netWeight            String?
   priceWeight          String?
-  quantity             Decimal?
+  quantity             Decimal? //supQty
   total                Decimal?
   poLine               String?
   reviewReason         String?
   serviceTimeSheetLine String?
+  POItemUuid           String?
+  invoiceUuid          String?
 
-  POItemUuid  String?
-  POItem      POItem?  @relation(fields: [POItemUuid], references: [uuid])
-  Invoice     Invoice? @relation(fields: [invoiceUuid], references: [uuid])
-  invoiceUuid String?
+  poItem  POItem?  @relation(fields: [POItemUuid], references: [uuid])
+  invoice Invoice? @relation(fields: [invoiceUuid], references: [uuid])
 }
 
 model Settings {
