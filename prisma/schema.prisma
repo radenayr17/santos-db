@@ -115,17 +115,19 @@ model BankingData {
 }
 
 model Comment {
-  uuid       String  @id @default(uuid())
-  authorUuid String
-  message    String
-  visibility String  @default("internal") //internal, external
-  POUuid     String?
-  revision   String? @default("")
+  uuid        String  @id @default(uuid())
+  authorUuid  String
+  message     String
+  visibility  String  @default("internal") //internal, external
+  POUuid      String?
+  revision    String? @default("")
+  invoiceUuid String?
 
   author        User           @relation(fields: [authorUuid], references: [uuid])
   PODocument    PODocument?    @relation(fields: [POUuid], references: [uuid])
   notifications Notification[]
   attachments   Attachment[]
+  invoice       Invoice?       @relation(fields: [invoiceUuid], references: [uuid])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -304,16 +306,17 @@ model Invoice {
   sesProvided        Boolean?
   costProvided       Boolean?
 
-  createdDate        DateTime     @default(now())
+  createdDate        DateTime      @default(now())
   receivedDate       DateTime?
   status             String
-  unansweredComments Boolean
+  unansweredComments Boolean?
   disputeReason      String?
   applicableWHT      Boolean?
   poUuid             String?       @unique
   updatedAt          DateTime      @updatedAt
   po                 PODocument?   @relation(fields: [poUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
+  comments           Comment[]
 }
 
 model InvoiceLine {
