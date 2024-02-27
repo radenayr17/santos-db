@@ -149,11 +149,13 @@ model Notification {
   PODocumentUuid String?
   commentUuid    String?
   fileUuid       String?
+  invoiceUuid    String?
 
   comment             Comment?              @relation(fields: [commentUuid], references: [uuid])
   PODocument          PODocument?           @relation(fields: [PODocumentUuid], references: [uuid])
   POFile              POFile?               @relation(fields: [fileUuid], references: [uuid])
   UserGotNotification UserGotNotification[]
+  invoice             Invoice?              @relation(fields: [invoiceUuid], references: [uuid])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -306,17 +308,18 @@ model Invoice {
   sesProvided        Boolean?
   costProvided       Boolean?
 
-  createdDate        DateTime      @default(now())
+  createdDate        DateTime       @default(now())
   receivedDate       DateTime?
   status             String
   unansweredComments Boolean?
   disputeReason      String?
   applicableWHT      Boolean?
-  poUuid             String?       @unique
-  updatedAt          DateTime      @updatedAt
-  po                 PODocument?   @relation(fields: [poUuid], references: [uuid])
+  poUuid             String?        @unique
+  updatedAt          DateTime       @updatedAt
+  po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
   comments           Comment[]
+  Notification       Notification[]
 }
 
 model InvoiceLine {
