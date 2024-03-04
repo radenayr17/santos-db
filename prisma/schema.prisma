@@ -320,6 +320,7 @@ model Invoice {
   InvoiceLine        InvoiceLine[]
   comments           Comment[]
   Notification       Notification[]
+  POAuditLog         POAuditLog[]
 }
 
 model InvoiceLine {
@@ -370,14 +371,16 @@ model TableSettings {
 }
 
 model POAuditLog {
-  uuid     String  @id @default(uuid())
-  event    String //created, updated, viewed, acknowledged, poa_csv_upload, poa_csv_error
-  userUuid String?
-  poUuid   String?
-  revision String?
+  uuid        String  @id @default(uuid())
+  event       String //created, updated, viewed, acknowledged, poa_csv_upload, poa_csv_error
+  userUuid    String?
+  poUuid      String?
+  revision    String?
+  invoiceUuid String?
 
-  user User?       @relation(fields: [userUuid], references: [uuid])
-  po   PODocument? @relation(fields: [poUuid], references: [uuid])
+  user    User?       @relation(fields: [userUuid], references: [uuid])
+  po      PODocument? @relation(fields: [poUuid], references: [uuid])
+  invoice Invoice?    @relation(fields: [invoiceUuid], references: [uuid])
 
   createdAt DateTime @default(now())
 }
