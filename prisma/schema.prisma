@@ -36,6 +36,7 @@ model User {
   tableViewSettings   TableSettings[]
   lastLogin           DateTime?
   POAuditLog          POAuditLog[]
+  Invoice             Invoice[]
 }
 
 model Role {
@@ -213,7 +214,7 @@ model PODocument {
   POAuditLog    POAuditLog[]
   POFile        POFile[]
   POVersions    POVersion[]
-  Invoice       Invoice?
+  Invoices      Invoice[]
 }
 
 model POItem {
@@ -314,13 +315,15 @@ model Invoice {
   unansweredComments Boolean?
   disputeReason      String?
   applicableWHT      Boolean?
-  poUuid             String?        @unique
+  poUuid             String?
   updatedAt          DateTime       @updatedAt
+  updatedByUuid      String?
   po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
   comments           Comment[]
   Notification       Notification[]
   POAuditLog         POAuditLog[]
+  updatedBy          User?          @relation(fields: [updatedByUuid], references: [uuid])
 }
 
 model InvoiceLine {
