@@ -279,7 +279,7 @@ model POAItem {
 model Invoice {
   uuid               String    @id @default(uuid())
   invoiceNo          String    @unique
-  type               String //invoice or credit
+  type               String    @default("invoice") //invoice or credit
   orderNo            String
   orgInvNo           String?
   orgInvDate         DateTime?
