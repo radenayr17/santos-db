@@ -37,6 +37,7 @@ model User {
   lastLogin           DateTime?
   POAuditLog          POAuditLog[]
   Invoice             Invoice[]
+  Approver            Invoice[]             @relation("approver")
 }
 
 model Role {
@@ -309,6 +310,7 @@ model Invoice {
   whtTaxCodeDesc     String?
   sesProvided        Boolean?
   costProvided       Boolean?
+  userUuid           String?
 
   createdDate        DateTime       @default(now())
   receivedDate       DateTime?
@@ -320,6 +322,7 @@ model Invoice {
   updatedAt          DateTime       @updatedAt
   updatedByUuid      String?
   po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
+  approver           User?          @relation("approver", fields: [userUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
   comments           Comment[]
   Notification       Notification[]
