@@ -193,7 +193,7 @@ model PODocument {
   procurementContact String
   requester          String
   agreementNo        String
-  paymentTerms       DateTime?
+  paymentTerms       String?
   incoterms          String
   additionalInfo     String?
   totalExcludeTax    Decimal
@@ -321,6 +321,9 @@ model Invoice {
   poUuid             String?
   updatedAt          DateTime       @updatedAt
   updatedByUuid      String?
+  paymentDate        DateTime?
+  exportedBy         String?
+  exportedDate       Boolean?
   po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
   approver           User?          @relation("approver", fields: [userUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
