@@ -323,7 +323,7 @@ model Invoice {
   updatedByUuid      String?
   paymentDate        DateTime?
   exportedBy         String?
-  exported           Boolean?
+  exported           Boolean?       @default(false)
   po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
   approver           User?          @relation("approver", fields: [userUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
