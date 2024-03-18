@@ -428,7 +428,7 @@ model POVersion {
   procurementContact String
   requester          String
   agreementNo        String
-  paymentTerms       DateTime?
+  paymentTerms       String?
   incoterms          String
   additionalInfo     String?
   totalExcludeTax    Decimal
