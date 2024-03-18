@@ -366,6 +366,7 @@ model Settings {
   priceTolerance             Decimal  @default(0)
   quantityTolerance          Int      @default(0)
   defaultNotificationsLength Int      @default(10)
+  buyerApprovalReminderDays  Int      @default(0)
   updatedAt                  DateTime @updatedAt
 }
 
