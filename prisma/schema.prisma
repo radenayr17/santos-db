@@ -193,7 +193,7 @@ model PODocument {
   procurementContact String
   requester          String
   agreementNo        String
-  paymentTerms       DateTime?
+  paymentTerms       String?
   incoterms          String
   additionalInfo     String?
   totalExcludeTax    Decimal
@@ -321,6 +321,9 @@ model Invoice {
   poUuid             String?
   updatedAt          DateTime       @updatedAt
   updatedByUuid      String?
+  paymentDate        DateTime?
+  exportedBy         String?
+  exported           Boolean?       @default(false)
   po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
   approver           User?          @relation("approver", fields: [userUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
@@ -363,6 +366,7 @@ model Settings {
   priceTolerance             Decimal  @default(0)
   quantityTolerance          Int      @default(0)
   defaultNotificationsLength Int      @default(10)
+  buyerApprovalReminderDays  Int      @default(0)
   updatedAt                  DateTime @updatedAt
 }
 
@@ -425,7 +429,7 @@ model POVersion {
   procurementContact String
   requester          String
   agreementNo        String
-  paymentTerms       DateTime?
+  paymentTerms       String?
   incoterms          String
   additionalInfo     String?
   totalExcludeTax    Decimal
