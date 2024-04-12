@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE `invoice` ADD COLUMN `subtype` VARCHAR(191) NULL;
+ALTER TABLE `Invoice` ADD COLUMN `subtype` VARCHAR(191) NULL;
