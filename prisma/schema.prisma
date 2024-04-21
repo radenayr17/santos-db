@@ -440,6 +440,7 @@ model POVersion {
   additionalInfo     String?
   totalExcludeTax    Decimal
   supplierAccountNo  String?
+  pfsTick            Boolean   @default(false)
 
   createdAt DateTime @default(now())
 

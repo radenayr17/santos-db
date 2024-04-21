@@ -1,6 +1,9 @@
 -- AlterTable
 ALTER TABLE `PODocument` ADD COLUMN `pfsTick` BOOLEAN NOT NULL DEFAULT false;
 
+-- AlterTable
+ALTER TABLE `POVersion` ADD COLUMN `pfsTick` BOOLEAN NOT NULL DEFAULT false;
+
 -- CreateTable
 CREATE TABLE `EmailWhitelist` (
     `uuid` VARCHAR(191) NOT NULL,
