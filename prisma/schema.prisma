@@ -281,6 +281,7 @@ model Invoice {
   uuid               String    @id @default(uuid())
   invoiceNo          String    @unique
   type               String    @default("invoice") //invoice or credit
+  subtype            String?
   orderNo            String
   orgInvNo           String?
   orgInvDate         DateTime?
@@ -313,6 +314,7 @@ model Invoice {
   userUuid           String?
 
   createdDate        DateTime       @default(now())
+  createdFrom        String? // AP Portal, Supplier Platform
   receivedDate       DateTime?
   status             String
   unansweredComments Boolean?
@@ -324,6 +326,7 @@ model Invoice {
   paymentDate        DateTime?
   exportedBy         String?
   exported           Boolean?       @default(false)
+  meta               Json?          @default(dbgenerated())
   po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
   approver           User?          @relation("approver", fields: [userUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
@@ -352,6 +355,7 @@ model InvoiceLine {
   serviceTimeSheetLine String?
   POItemUuid           String?
   invoiceUuid          String?
+  meta                 Json?    @default(dbgenerated())
 
   poItem  POItem?  @relation(fields: [POItemUuid], references: [uuid])
   invoice Invoice? @relation(fields: [invoiceUuid], references: [uuid])
