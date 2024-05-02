@@ -205,6 +205,7 @@ model PODocument {
   reminder           Boolean   @default(false)
   executionArn       String?
   pfsTick            Boolean   @default(false)
+  companyCode        String?
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -441,6 +442,7 @@ model POVersion {
   totalExcludeTax    Decimal
   supplierAccountNo  String?
   pfsTick            Boolean   @default(false)
+  companyCode        String?
 
   createdAt DateTime @default(now())
 
