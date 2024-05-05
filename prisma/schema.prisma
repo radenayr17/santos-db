@@ -305,6 +305,7 @@ model Invoice {
   freightTaxCode     String?
   addCharges         Decimal?
   addChargesTax      Decimal?
+  addChargesTaxCode  String?
   addChargesCurrency String?
   whtAmount          Decimal?
   whtBase            Decimal?
