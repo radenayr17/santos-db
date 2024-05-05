@@ -316,6 +316,7 @@ model Invoice {
   sesProvided        Boolean?
   costProvided       Boolean?
   userUuid           String?
+  companyCode        String?
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
