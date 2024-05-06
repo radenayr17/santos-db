@@ -76,10 +76,10 @@ model Supplier {
   generalEmail       String?
   shipping           String?
   taxCountryRegion   String?
+  companyCode        Json    @default(dbgenerated("[]"))
 
-  companyCode String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   supplierAdresses SupplierAddress[]
   users            User[]
