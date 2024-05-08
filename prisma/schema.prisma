@@ -354,7 +354,8 @@ model InvoiceLine {
   netWeight            String?
   priceWeight          String?
   quantity             Decimal? //supQty
-  total                Decimal?
+  totalGross           Decimal? //grossLineTotal
+  total                Decimal? //total
   poLine               String?
   reviewReason         String?
   serviceTimeSheetLine String?
