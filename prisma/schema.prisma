@@ -76,10 +76,10 @@ model Supplier {
   generalEmail       String?
   shipping           String?
   taxCountryRegion   String?
+  companyCode        Json    @default(dbgenerated("[]"))
 
-  companyCode String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   supplierAdresses SupplierAddress[]
   users            User[]
@@ -205,6 +205,7 @@ model PODocument {
   reminder           Boolean   @default(false)
   executionArn       String?
   pfsTick            Boolean   @default(false)
+  companyCode        String?
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -304,6 +305,7 @@ model Invoice {
   freightTaxCode     String?
   addCharges         Decimal?
   addChargesTax      Decimal?
+  addChargesTaxCode  String?
   addChargesCurrency String?
   whtAmount          Decimal?
   whtBase            Decimal?
@@ -314,6 +316,8 @@ model Invoice {
   sesProvided        Boolean?
   costProvided       Boolean?
   userUuid           String?
+  companyCode        String?
+  creditNoteNo       String?
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
@@ -351,7 +355,8 @@ model InvoiceLine {
   netWeight            String?
   priceWeight          String?
   quantity             Decimal? //supQty
-  total                Decimal?
+  totalGross           Decimal? //grossLineTotal
+  total                Decimal? //total
   poLine               String?
   reviewReason         String?
   serviceTimeSheetLine String?
@@ -441,6 +446,7 @@ model POVersion {
   totalExcludeTax    Decimal
   supplierAccountNo  String?
   pfsTick            Boolean   @default(false)
+  companyCode        String?
 
   createdAt DateTime @default(now())
 
