@@ -11,20 +11,22 @@ datasource db {
 }
 
 model User {
-  uuid                 String   @id @default(uuid())
-  email                String   @unique
-  cognitoId            String   @unique
+  uuid                 String    @id @default(uuid())
+  email                String    @unique
+  cognitoId            String    @unique
   firstName            String
   lastName             String
-  username             String   @unique
+  username             String    @unique
   department           String?
-  isActive             Boolean  @default(true)
+  isActive             Boolean   @default(true)
   phoneNumber          String?
-  commentNotifications Boolean  @default(true)
-  emailNotifications   Boolean  @default(true)
-  notifSettings        Json?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  commentNotifications Boolean   @default(true)
+  emailNotifications   Boolean   @default(true)
+  notifSettings        Json?     @default("{}")
+  isDeleted            Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
 
   supplier                Supplier?                @relation(fields: [supplierUuid], references: [uuid])
   role                    Role                     @relation(fields: [roleUuid], references: [uuid])
@@ -39,6 +41,7 @@ model User {
   Invoice                 Invoice[]
   Approver                Invoice[]                @relation("approver")
   emailWhitelistAuditLogs EmailWhitelistAuditLog[]
+  AuditLog                AuditLog[]
 }
 
 model Role {
@@ -492,4 +495,15 @@ model EmailWhitelistAuditLog {
   email     String?
   user      User     @relation(fields: [userUuid], references: [uuid])
   createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  uuid        String   @id @default(uuid())
+  model       String
+  event       String
+  description String
+  userUuid    String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userUuid], references: [uuid])
 }
