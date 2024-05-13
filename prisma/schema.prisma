@@ -11,20 +11,22 @@ datasource db {
 }
 
 model User {
-  uuid                 String   @id @default(uuid())
-  email                String   @unique
-  cognitoId            String   @unique
+  uuid                 String    @id @default(uuid())
+  email                String    @unique
+  cognitoId            String    @unique
   firstName            String
   lastName             String
-  username             String   @unique
+  username             String    @unique
   department           String?
-  isActive             Boolean  @default(true)
+  isActive             Boolean   @default(true)
   phoneNumber          String?
-  commentNotifications Boolean  @default(true)
-  emailNotifications   Boolean  @default(true)
-  notifSettings        Json?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  commentNotifications Boolean   @default(true)
+  emailNotifications   Boolean   @default(true)
+  notifSettings        Json?     @default("{}")
+  isDeleted            Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
 
   supplier                Supplier?                @relation(fields: [supplierUuid], references: [uuid])
   role                    Role                     @relation(fields: [roleUuid], references: [uuid])
@@ -39,6 +41,7 @@ model User {
   Invoice                 Invoice[]
   Approver                Invoice[]                @relation("approver")
   emailWhitelistAuditLogs EmailWhitelistAuditLog[]
+  AuditLog                AuditLog[]
 }
 
 model Role {
@@ -285,14 +288,14 @@ model POAItem {
 
 model Invoice {
   uuid               String    @id @default(uuid())
-  invoiceNo          String    @unique
+  invoiceNo          String
   type               String    @default("invoice") //invoice or credit
   subtype            String?
   orderNo            String
   orgInvNo           String?
   orgInvDate         DateTime?
   settlementDate     DateTime?
-  remitToCode        String?
+  remitToCode        String    @default("")
   vendorNo           String?
   channel            String?
   submittedby        String?
@@ -320,7 +323,10 @@ model Invoice {
   costProvided       Boolean?
   userUuid           String?
   companyCode        String?
-  creditNoteNo       String?
+  creditNoteNo       String    @default("")
+  businessNo         String    @default("") //business number
+  bsb                String    @default("")
+  acn                String    @default("") //account number
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
@@ -343,11 +349,13 @@ model Invoice {
   Notification       Notification[]
   POAuditLog         POAuditLog[]
   updatedBy          User?          @relation(fields: [updatedByUuid], references: [uuid])
+
+  @@unique([invoiceNo, creditNoteNo])
 }
 
 model InvoiceLine {
   uuid                 String   @id @default(uuid())
-  itemNo               Int
+  itemNo               String
   imrNo                String?
   description          String?
   taxCode              String?
@@ -492,4 +500,15 @@ model EmailWhitelistAuditLog {
   email     String?
   user      User     @relation(fields: [userUuid], references: [uuid])
   createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  uuid        String   @id @default(uuid())
+  model       String
+  event       String
+  description String
+  userUuid    String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userUuid], references: [uuid])
 }
