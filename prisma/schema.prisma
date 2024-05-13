@@ -295,7 +295,7 @@ model Invoice {
   orgInvNo           String?
   orgInvDate         DateTime?
   settlementDate     DateTime?
-  remitToCode        String?
+  remitToCode        String    @default("")
   vendorNo           String?
   channel            String?
   submittedby        String?
@@ -324,6 +324,9 @@ model Invoice {
   userUuid           String?
   companyCode        String?
   creditNoteNo       String    @default("")
+  businessNo         String    @default("") //business number
+  bsb                String    @default("")
+  acn                String    @default("") //account number
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
