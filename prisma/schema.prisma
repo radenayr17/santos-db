@@ -354,8 +354,8 @@ model Invoice {
 }
 
 model InvoiceLine {
-  uuid                 String   @id @default(uuid())
-  itemNo               String
+  uuid                 String    @id @default(uuid())
+  itemNo               String //itemNo poLineNo
   imrNo                String?
   description          String?
   taxCode              String?
@@ -373,7 +373,49 @@ model InvoiceLine {
   serviceTimeSheetLine String?
   POItemUuid           String?
   invoiceUuid          String?
-  meta                 Json?    @default(dbgenerated())
+  meta                 Json?     @default(dbgenerated())
+  packQty              Decimal?
+  ordQty               Decimal?
+  expiryDate           DateTime?
+  date                 DateTime?
+  code                 String?
+  ean                  String?
+  freightCondition     Decimal?  @db.Decimal(10, 4)
+  buyersCode           String?
+  esn                  String?
+  resourceName         String?
+  starting             String?
+  finishing            String?
+  glCode               String?
+  wo                   String?
+  woActivity           String?
+  poLineDesc           String?
+  network              String?
+  networkActivity      String?
+  wbs                  String?
+  costCenter           String?
+  poServiceLineNo      String?
+  lineOrderReference   String?
+  attr1                String?
+  attr2                String?
+  attr3                String?
+  attr4                String?
+  attr5                String?
+  attr6                String?
+  attr7                String?
+  attr8                String?
+  attr9                String?
+  attr10               String?
+  attr11               String?
+  attr12               String?
+  attr13               String?
+  attr14               String?
+  attr15               String?
+  attr16               String?
+  attr17               String?
+  attr18               String?
+  attr19               String?
+  attr20               String?
 
   poItem  POItem?  @relation(fields: [POItemUuid], references: [uuid])
   invoice Invoice? @relation(fields: [invoiceUuid], references: [uuid])
