@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Invoice` ADD COLUMN `freightStatus` VARCHAR(191) NOT NULL DEFAULT 'PENDING',
+    ADD COLUMN `freightUpdateAt` DATETIME(3) NULL;
