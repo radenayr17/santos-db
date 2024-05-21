@@ -327,6 +327,8 @@ model Invoice {
   businessNo         String    @default("") //business number
   bsb                String    @default("")
   acn                String    @default("") //account number
+  freightStatus      String    @default("PENDING") //PENDING, APPROVED, REJECTED
+  freightUpdateAt    DateTime?
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
