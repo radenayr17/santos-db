@@ -351,6 +351,7 @@ model Invoice {
   Notification       Notification[]
   POAuditLog         POAuditLog[]
   updatedBy          User?          @relation(fields: [updatedByUuid], references: [uuid])
+  InvoiceFile        InvoiceFile[]
 
   @@unique([invoiceNo, creditNoteNo])
 }
@@ -380,10 +381,10 @@ model InvoiceLine {
   ordQty               Decimal?
   expiryDate           DateTime?
   date                 DateTime?
-  code                 String?
-  ean                  String?
+  code                 String? //vendor code
+  ean                  String? //barcode
   freightCondition     Decimal?  @db.Decimal(10, 4)
-  buyersCode           String?
+  buyersCode           String? //material
   esn                  String?
   resourceName         String?
   starting             String?
@@ -421,6 +422,19 @@ model InvoiceLine {
 
   poItem  POItem?  @relation(fields: [POItemUuid], references: [uuid])
   invoice Invoice? @relation(fields: [invoiceUuid], references: [uuid])
+}
+
+model InvoiceFile {
+  uuid     String @id @default(uuid())
+  name     String
+  mimeType String
+  bucket   String
+  key      String
+
+  invoiceUuid String
+  createdAt   DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceUuid], references: [uuid])
 }
 
 model Settings {
