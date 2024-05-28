@@ -80,7 +80,8 @@ model Supplier {
   shipping           String?
   taxCountryRegion   String?
   companyCode        Json    @default("[]")
-
+  taxIdNo            String?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -233,7 +234,7 @@ model POItem {
   description             String?
   supplierReference       String?
   manufacturersPartNumber String?
-  costElements            Json //Array of decimal numbers
+  costElements            Json //Array of decimal numbers or strings
   quantity                Int
   unit                    String
   unitPrice               Decimal
@@ -242,6 +243,7 @@ model POItem {
   finalDestination        String
   supplierDueDate         DateTime
   requisition             Int
+  freight                 Decimal?  @db.Decimal(10, 4)
 
   PODocumentUuid String
   PODocument     PODocument    @relation(fields: [PODocumentUuid], references: [uuid])
@@ -351,6 +353,7 @@ model Invoice {
   Notification       Notification[]
   POAuditLog         POAuditLog[]
   updatedBy          User?          @relation(fields: [updatedByUuid], references: [uuid])
+  InvoiceFile        InvoiceFile[]
 
   @@unique([invoiceNo, creditNoteNo])
 }
@@ -380,10 +383,10 @@ model InvoiceLine {
   ordQty               Decimal?
   expiryDate           DateTime?
   date                 DateTime?
-  code                 String?
-  ean                  String?
+  code                 String? //vendor code
+  ean                  String? //barcode
   freightCondition     Decimal?  @db.Decimal(10, 4)
-  buyersCode           String?
+  buyersCode           String? //material
   esn                  String?
   resourceName         String?
   starting             String?
@@ -421,6 +424,19 @@ model InvoiceLine {
 
   poItem  POItem?  @relation(fields: [POItemUuid], references: [uuid])
   invoice Invoice? @relation(fields: [invoiceUuid], references: [uuid])
+}
+
+model InvoiceFile {
+  uuid     String @id @default(uuid())
+  name     String
+  mimeType String
+  bucket   String
+  key      String
+
+  invoiceUuid String
+  createdAt   DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceUuid], references: [uuid])
 }
 
 model Settings {
@@ -518,7 +534,7 @@ model POVersionItem {
   materialNumber          String
   description             String?
   manufacturersPartNumber String?
-  costElements            Json //Array of decimal numbers
+  costElements            Json //Array of decimal numbers or strings
   quantity                Int
   unit                    String
   unitPrice               Decimal
@@ -527,6 +543,7 @@ model POVersionItem {
   finalDestination        String
   supplierDueDate         DateTime
   requisition             Int
+  freight                 Decimal? @db.Decimal(10, 4)
   supplierReference       String?
 
   poVersion POVersion @relation(fields: [poVersionUuid], references: [uuid])
