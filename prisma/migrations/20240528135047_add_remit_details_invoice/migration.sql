@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE `Invoice` ADD COLUMN `dueDate` DATETIME(3) NULL,
+    ADD COLUMN `iqxRequest` VARCHAR(191) NULL,
+    ADD COLUMN `remitDate` DATETIME(3) NULL,
+    ADD COLUMN `remitNo` VARCHAR(191) NULL,
+    ADD COLUMN `remitStatus` VARCHAR(191) NULL;
