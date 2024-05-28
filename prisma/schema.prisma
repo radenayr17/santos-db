@@ -234,7 +234,7 @@ model POItem {
   description             String?
   supplierReference       String?
   manufacturersPartNumber String?
-  costElements            Json //Array of decimal numbers
+  costElements            Json //Array of decimal numbers or strings
   quantity                Int
   unit                    String
   unitPrice               Decimal
@@ -243,6 +243,7 @@ model POItem {
   finalDestination        String
   supplierDueDate         DateTime
   requisition             Int
+  freight                 Decimal?  @db.Decimal(10, 4)
 
   PODocumentUuid String
   PODocument     PODocument    @relation(fields: [PODocumentUuid], references: [uuid])
@@ -533,7 +534,7 @@ model POVersionItem {
   materialNumber          String
   description             String?
   manufacturersPartNumber String?
-  costElements            Json //Array of decimal numbers
+  costElements            Json //Array of decimal numbers or strings
   quantity                Int
   unit                    String
   unitPrice               Decimal
@@ -542,6 +543,7 @@ model POVersionItem {
   finalDestination        String
   supplierDueDate         DateTime
   requisition             Int
+  freight                 Decimal? @db.Decimal(10, 4)
   supplierReference       String?
 
   poVersion POVersion @relation(fields: [poVersionUuid], references: [uuid])
