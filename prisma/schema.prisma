@@ -331,6 +331,13 @@ model Invoice {
   acn                String    @default("") //account number
   freightStatus      String    @default("PENDING") //PENDING, APPROVED, REJECTED
   freightUpdateAt    DateTime?
+  isDraft            Boolean   @default(false)
+  //remitNo            String?
+  //remitDate          DateTime?
+  //remitStatus        String?
+  //iqxRequest         String?
+  //dueDate            DateTime?
+
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
