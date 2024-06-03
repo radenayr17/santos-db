@@ -331,6 +331,11 @@ model Invoice {
   acn                String    @default("") //account number
   freightStatus      String    @default("PENDING") //PENDING, APPROVED, REJECTED
   freightUpdateAt    DateTime?
+  isDraft            Boolean   @default(false)
+  remitNo            String?
+  remitDate          DateTime?
+  remitStatus        String?
+
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
@@ -466,6 +471,7 @@ model TableSettings {
 model POAuditLog {
   uuid        String  @id @default(uuid())
   event       String //created, updated, viewed, acknowledged, poa_csv_upload, poa_csv_error
+  data        Json?
   userUuid    String?
   poUuid      String?
   revision    String?
