@@ -584,6 +584,21 @@ model AuditLog {
   supplier Supplier? @relation(fields: [supplierUuid], references: [uuid])
 }
 
+model APMessage {
+  uuid         String   @id @default(uuid())
+  messageId    String   @unique
+  status       String
+  attachments  String
+  subject      String
+  sender       String
+  code         String 
+  account      String
+  receivedDate DateTime
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 enum ConfigCreateInvoice {
   DoNotOverride
   AllowToCreate
