@@ -57,31 +57,32 @@ model Role {
 }
 
 model Supplier {
-  uuid               String  @id @default(uuid())
-  name               String
-  tradingName        String?
-  accountNumber      String  @unique
-  ABN                String?
-  streetAddress      String?
-  suburb             String?
-  city               String?
-  state              String?
-  postCode           String?
-  countryCode        String?
-  country            String?
-  postingBlockStatus Boolean
-  paymentBlockStatus Boolean
-  isActive           Boolean
-  ACN                String?
-  paymentTerms       String?
-  POEmail            String?
-  remittanceEmail    String?
-  generalEmail       String?
-  shipping           String?
-  taxCountryRegion   String?
-  companyCode        Json    @default("[]")
-  taxIdNo            String?
-  
+  uuid                String               @id @default(uuid())
+  name                String
+  tradingName         String?
+  accountNumber       String               @unique
+  ABN                 String?
+  streetAddress       String?
+  suburb              String?
+  city                String?
+  state               String?
+  postCode            String?
+  countryCode         String?
+  country             String?
+  postingBlockStatus  Boolean
+  paymentBlockStatus  Boolean
+  isActive            Boolean
+  ACN                 String?
+  paymentTerms        String?
+  POEmail             String?
+  remittanceEmail     String?
+  generalEmail        String?
+  shipping            String?
+  taxCountryRegion    String?
+  companyCode         Json                 @default("[]")
+  taxIdNo             String?
+  configCreateInvoice ConfigCreateInvoice?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -91,6 +92,7 @@ model Supplier {
   PODocument       PODocument[]
   POADocument      POADocument[]
   POVersions       POVersion[]
+  AuditLog         AuditLog[]
 }
 
 model SupplierAddress {
@@ -119,7 +121,7 @@ model BankingData {
   supplier          Supplier @relation(fields: [supplierUuid], references: [uuid])
   supplierUuid      String
 
-  @@unique([accountNumber, supplierUuid])
+  @@unique([remitToCode, supplierUuid])
 }
 
 model Comment {
@@ -243,7 +245,7 @@ model POItem {
   finalDestination        String
   supplierDueDate         DateTime
   requisition             Int
-  freight                 Decimal?  @db.Decimal(10, 4)
+  freight                 Decimal? @db.Decimal(10, 4)
 
   PODocumentUuid String
   PODocument     PODocument    @relation(fields: [PODocumentUuid], references: [uuid])
@@ -331,7 +333,19 @@ model Invoice {
   acn                String    @default("") //account number
   freightStatus      String    @default("PENDING") //PENDING, APPROVED, REJECTED
   freightUpdateAt    DateTime?
-
+  isDraft            Boolean   @default(false)
+  //SAP CSV
+  remitNo            String?
+  remitDate          DateTime?
+  remitStatus        String?
+  remitAmount        Decimal?
+  //IQX CSV
+  rejectComment      String? 
+  sapBillingNo       String? 
+  iqxRequestNo       String? 
+  lastUpdateDate     DateTime?
+  dueDate            DateTime?
+  
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
   receivedDate       DateTime?
@@ -440,16 +454,17 @@ model InvoiceFile {
 }
 
 model Settings {
-  uuid                       String   @id @default(uuid())
-  senderEmail                String   @default("")
-  maxRetryCount              Int      @default(3)
-  techSupportEmails          Json? //array of emails
-  businessNotifications      Json? //Object {moduleName: array of emails}
-  priceTolerance             Decimal  @default(0)
-  quantityTolerance          Int      @default(0)
-  defaultNotificationsLength Int      @default(10)
-  buyerApprovalReminderDays  Int      @default(0)
-  updatedAt                  DateTime @updatedAt
+  uuid                              String   @id @default(uuid())
+  senderEmail                       String   @default("")
+  maxRetryCount                     Int      @default(3)
+  techSupportEmails                 Json? //array of emails
+  businessNotifications             Json? //Object {moduleName: array of emails}
+  priceTolerance                    Decimal  @default(0)
+  quantityTolerance                 Int      @default(0)
+  defaultNotificationsLength        Int      @default(10)
+  buyerApprovalReminderDays         Int      @default(0)
+  suppliersCanCreateInvoiceInPortal Boolean  @default(false)
+  updatedAt                         DateTime @updatedAt
 }
 
 model TableSettings {
@@ -466,6 +481,7 @@ model TableSettings {
 model POAuditLog {
   uuid        String  @id @default(uuid())
   event       String //created, updated, viewed, acknowledged, poa_csv_upload, poa_csv_error
+  data        Json?
   userUuid    String?
   poUuid      String?
   revision    String?
@@ -564,12 +580,35 @@ model EmailWhitelistAuditLog {
 }
 
 model AuditLog {
-  uuid        String   @id @default(uuid())
-  model       String
-  event       String
-  description String
-  userUuid    String
-  createdAt   DateTime @default(now())
+  uuid         String   @id @default(uuid())
+  model        String
+  event        String
+  description  String
+  userUuid     String
+  supplierUuid String?
+  createdAt    DateTime @default(now())
 
-  user User @relation(fields: [userUuid], references: [uuid])
+  user     User      @relation(fields: [userUuid], references: [uuid])
+  supplier Supplier? @relation(fields: [supplierUuid], references: [uuid])
+}
+
+model APMessage {
+  uuid         String   @id @default(uuid())
+  messageId    String   @unique
+  status       String
+  attachments  String
+  subject      String
+  sender       String
+  code         String 
+  account      String
+  receivedDate DateTime
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum ConfigCreateInvoice {
+  DoNotOverride
+  AllowToCreate
+  DoNotAllowToCreate
 }
