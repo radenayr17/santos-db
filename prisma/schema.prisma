@@ -27,6 +27,8 @@ model User {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   deletedAt            DateTime?
+  lastLogin            DateTime?
+  firstLogin           DateTime?
 
   supplier                Supplier?                @relation(fields: [supplierUuid], references: [uuid])
   role                    Role                     @relation(fields: [roleUuid], references: [uuid])
@@ -36,7 +38,6 @@ model User {
   comment                 Comment[]
   POADocument             POADocument[]
   tableViewSettings       TableSettings[]
-  lastLogin               DateTime?
   POAuditLog              POAuditLog[]
   Invoice                 Invoice[]
   Approver                Invoice[]                @relation("approver")
@@ -214,6 +215,7 @@ model PODocument {
   pfsTick            Boolean   @default(false)
   companyCode        String?
   supplierReference  String?
+  deleteCode         String? //D for deleted, L for Locked
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -535,6 +537,7 @@ model POVersion {
   pfsTick            Boolean   @default(false)
   companyCode        String?
   supplierReference  String?
+  deleteCode         String? //D for deleted, L for Locked
 
   createdAt DateTime @default(now())
 
