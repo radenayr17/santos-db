@@ -334,10 +334,18 @@ model Invoice {
   freightStatus      String    @default("PENDING") //PENDING, APPROVED, REJECTED
   freightUpdateAt    DateTime?
   isDraft            Boolean   @default(false)
+  //SAP CSV
   remitNo            String?
   remitDate          DateTime?
   remitStatus        String?
-
+  remitAmount        Decimal?
+  //IQX CSV
+  rejectComment      String? 
+  sapBillingNo       String? 
+  iqxRequestNo       String? 
+  lastUpdateDate     DateTime?
+  dueDate            DateTime?
+  
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
   receivedDate       DateTime?
