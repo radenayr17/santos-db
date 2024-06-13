@@ -83,6 +83,7 @@ model Supplier {
   companyCode         Json                 @default("[]")
   taxIdNo             String?
   configCreateInvoice ConfigCreateInvoice?
+  configCreatePOR     ConfigCreateInvoice?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -342,12 +343,12 @@ model Invoice {
   remitStatus        String?
   remitAmount        Decimal?
   //IQX CSV
-  rejectComment      String? 
-  sapBillingNo       String? 
-  iqxRequestNo       String? 
+  rejectComment      String?
+  sapBillingNo       String?
+  iqxRequestNo       String?
   lastUpdateDate     DateTime?
   dueDate            DateTime?
-  
+
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
   receivedDate       DateTime?
@@ -466,6 +467,7 @@ model Settings {
   defaultNotificationsLength        Int      @default(10)
   buyerApprovalReminderDays         Int      @default(0)
   suppliersCanCreateInvoiceInPortal Boolean  @default(false)
+  suppliersCanCreatePORInPortal     Boolean  @default(true)
   updatedAt                         DateTime @updatedAt
 }
 
@@ -587,11 +589,11 @@ model AuditLog {
   model        String
   event        String
   description  String
-  userUuid     String
+  userUuid     String?
   supplierUuid String?
   createdAt    DateTime @default(now())
 
-  user     User      @relation(fields: [userUuid], references: [uuid])
+  user     User?     @relation(fields: [userUuid], references: [uuid])
   supplier Supplier? @relation(fields: [supplierUuid], references: [uuid])
 }
 
@@ -602,12 +604,12 @@ model APMessage {
   attachments  String
   subject      String
   sender       String
-  code         String 
+  code         String
   account      String
   receivedDate DateTime
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ConfigCreateInvoice {
