@@ -95,6 +95,7 @@ model Supplier {
   POADocument      POADocument[]
   POVersions       POVersion[]
   AuditLog         AuditLog[]
+  APMessage        APMessage[]
 }
 
 model SupplierAddress {
@@ -253,6 +254,10 @@ model POItem {
   PODocumentUuid String
   PODocument     PODocument    @relation(fields: [PODocumentUuid], references: [uuid])
   InvoiceLine    InvoiceLine[]
+
+  parentPoItemUuid String?
+  parentPoItem     POItem?  @relation("ParentChild", fields: [parentPoItemUuid], references: [uuid])
+  poItems          POItem[] @relation("ParentChild")
 }
 
 model POADocument {
@@ -468,6 +473,7 @@ model Settings {
   buyerApprovalReminderDays         Int      @default(0)
   suppliersCanCreateInvoiceInPortal Boolean  @default(false)
   suppliersCanCreatePORInPortal     Boolean  @default(true)
+  masterVendorEmail                 String   @default("vendor.records@santos.com")
   updatedAt                         DateTime @updatedAt
 }
 
@@ -567,7 +573,10 @@ model POVersionItem {
   freight                 Decimal? @db.Decimal(10, 4)
   supplierReference       String?
 
-  poVersion POVersion @relation(fields: [poVersionUuid], references: [uuid])
+  poVersion               POVersion       @relation(fields: [poVersionUuid], references: [uuid])
+  parentPoVersionItemUuid String?
+  parentPoVersionItem     POVersionItem?  @relation("ParentChild", fields: [parentPoVersionItemUuid], references: [uuid])
+  poVersionItems          POVersionItem[] @relation("ParentChild")
 }
 
 model EmailWhitelist {
@@ -610,6 +619,8 @@ model APMessage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  supplier Supplier? @relation(fields: [code], references: [accountNumber])
 }
 
 enum ConfigCreateInvoice {
