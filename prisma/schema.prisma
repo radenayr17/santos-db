@@ -27,6 +27,8 @@ model User {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   deletedAt            DateTime?
+  lastLogin            DateTime?
+  firstLogin           DateTime?
 
   supplier                Supplier?                @relation(fields: [supplierUuid], references: [uuid])
   role                    Role                     @relation(fields: [roleUuid], references: [uuid])
@@ -36,7 +38,6 @@ model User {
   comment                 Comment[]
   POADocument             POADocument[]
   tableViewSettings       TableSettings[]
-  lastLogin               DateTime?
   POAuditLog              POAuditLog[]
   Invoice                 Invoice[]
   Approver                Invoice[]                @relation("approver")
@@ -82,6 +83,7 @@ model Supplier {
   companyCode         Json                 @default("[]")
   taxIdNo             String?
   configCreateInvoice ConfigCreateInvoice?
+  configCreatePOR     ConfigCreateInvoice?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -214,6 +216,7 @@ model PODocument {
   pfsTick            Boolean   @default(false)
   companyCode        String?
   supplierReference  String?
+  deleteCode         String? //D for deleted, L for Locked
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -340,12 +343,12 @@ model Invoice {
   remitStatus        String?
   remitAmount        Decimal?
   //IQX CSV
-  rejectComment      String? 
-  sapBillingNo       String? 
-  iqxRequestNo       String? 
+  rejectComment      String?
+  sapBillingNo       String?
+  iqxRequestNo       String?
   lastUpdateDate     DateTime?
   dueDate            DateTime?
-  
+
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
   receivedDate       DateTime?
@@ -464,6 +467,7 @@ model Settings {
   defaultNotificationsLength        Int      @default(10)
   buyerApprovalReminderDays         Int      @default(0)
   suppliersCanCreateInvoiceInPortal Boolean  @default(false)
+  suppliersCanCreatePORInPortal     Boolean  @default(true)
   updatedAt                         DateTime @updatedAt
 }
 
@@ -535,6 +539,7 @@ model POVersion {
   pfsTick            Boolean   @default(false)
   companyCode        String?
   supplierReference  String?
+  deleteCode         String? //D for deleted, L for Locked
 
   createdAt DateTime @default(now())
 
@@ -584,11 +589,11 @@ model AuditLog {
   model        String
   event        String
   description  String
-  userUuid     String
+  userUuid     String?
   supplierUuid String?
   createdAt    DateTime @default(now())
 
-  user     User      @relation(fields: [userUuid], references: [uuid])
+  user     User?     @relation(fields: [userUuid], references: [uuid])
   supplier Supplier? @relation(fields: [supplierUuid], references: [uuid])
 }
 
@@ -599,12 +604,12 @@ model APMessage {
   attachments  String
   subject      String
   sender       String
-  code         String 
+  code         String
   account      String
   receivedDate DateTime
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ConfigCreateInvoice {
