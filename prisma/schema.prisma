@@ -43,6 +43,8 @@ model User {
   Approver                Invoice[]                @relation("approver")
   emailWhitelistAuditLogs EmailWhitelistAuditLog[]
   AuditLog                AuditLog[]
+  CreatedPOR              PORequest[]              @relation("createdBy")
+  UpdatedPOR              PORequest[]              @relation("updatedBy")
 }
 
 model Role {
@@ -231,6 +233,7 @@ model PODocument {
   POFile        POFile[]
   POVersions    POVersion[]
   Invoices      Invoice[]
+  PORequest     PORequest[]
 }
 
 model POItem {
@@ -256,8 +259,9 @@ model POItem {
   InvoiceLine    InvoiceLine[]
 
   parentPoItemUuid String?
-  parentPoItem     POItem?  @relation("ParentChild", fields: [parentPoItemUuid], references: [uuid])
-  poItems          POItem[] @relation("ParentChild")
+  parentPoItem     POItem?   @relation("ParentChild", fields: [parentPoItemUuid], references: [uuid])
+  poItems          POItem[]  @relation("ParentChild")
+  PORItem          PORItem[]
 }
 
 model POADocument {
@@ -613,7 +617,7 @@ model APMessage {
   attachments  String
   subject      String
   sender       String
-  code         String
+  code         String?
   account      String
   receivedDate DateTime
 
@@ -621,6 +625,40 @@ model APMessage {
   updatedAt DateTime @updatedAt
 
   supplier Supplier? @relation(fields: [code], references: [accountNumber])
+}
+
+model PORequest {
+  uuid   String @id @default(uuid())
+  status String @default("PENDING")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  poUuid    String
+  createdBy String
+  updatedBy String?
+
+  po            PODocument? @relation(fields: [poUuid], references: [uuid])
+  createdByUser User?       @relation("createdBy", fields: [createdBy], references: [uuid])
+  updatedByUser User?       @relation("updatedBy", fields: [updatedBy], references: [uuid])
+  PORItem       PORItem[]
+}
+
+model PORItem {
+  uuid              String   @id @default(uuid())
+  price             Decimal  @db.Decimal(10, 4)
+  quantity          Decimal  @db.Decimal(10, 4)
+  deleted           Boolean  @default(false)
+  deliveryCompleted Boolean? @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  porUuid    String
+  poItemUuid String
+
+  PORDocument PORequest? @relation(fields: [porUuid], references: [uuid], onDelete: Cascade)
+  POItem      POItem?    @relation(fields: [poItemUuid], references: [uuid])
 }
 
 enum ConfigCreateInvoice {
