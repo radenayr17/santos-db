@@ -628,8 +628,10 @@ model APMessage {
 }
 
 model PORequest {
-  uuid   String @id @default(uuid())
-  status String @default("PENDING")
+  uuid         String  @id @default(uuid())
+  status       String  @default("PENDING")
+  action       String
+  rejectReason String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
