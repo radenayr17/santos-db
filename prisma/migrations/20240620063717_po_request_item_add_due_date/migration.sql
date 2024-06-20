@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `PORItem` ADD COLUMN `dueDate` DATETIME(3) NULL;

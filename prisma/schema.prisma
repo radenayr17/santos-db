@@ -651,8 +651,9 @@ model PORItem {
   deleted           Boolean  @default(false)
   deliveryCompleted Boolean? @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   porUuid    String
   poItemUuid String
