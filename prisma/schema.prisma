@@ -629,6 +629,7 @@ model APMessage {
 
 model PORequest {
   uuid         String  @id @default(uuid())
+  changeId     String  @unique // to be used for change request to IQX API
   status       String  @default("PENDING")
   action       String
   rejectReason String?
