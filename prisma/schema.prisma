@@ -496,6 +496,7 @@ model POAuditLog {
   uuid        String  @id @default(uuid())
   event       String //created, updated, viewed, acknowledged, poa_csv_upload, poa_csv_error
   data        Json?
+  description String?
   userUuid    String?
   poUuid      String?
   revision    String?
@@ -629,6 +630,7 @@ model APMessage {
 
 model PORequest {
   uuid     String  @id @default(uuid())
+  revision String
   changeId String  @unique // to be used for change request to IQX API
   status   String  @default("PENDING")
   action   String
