@@ -357,6 +357,14 @@ model Invoice {
   iqxRequestNo       String?
   lastUpdateDate     DateTime?
   dueDate            DateTime?
+  //NPS CSV
+  supplierInvoiceNo  String?
+  supplierId         String?
+  amount             Decimal?
+  plantId            String?
+  plantDescription   String?
+  submittedDate      DateTime?
+  billingDocType     String?
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
@@ -634,10 +642,12 @@ model PORequest {
   changeId String  @unique // to be used for change request to IQX API
   status   String  @default("PENDING")
   action   String
+  iqxReqNo String? // IQX request number
   reason   String? // for reject / withdrawn changes
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastUpdate DateTime?
 
   poUuid    String
   createdBy String
