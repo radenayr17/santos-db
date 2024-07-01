@@ -45,6 +45,7 @@ model User {
   AuditLog                AuditLog[]
   CreatedPOR              PORequest[]              @relation("createdBy")
   UpdatedPOR              PORequest[]              @relation("updatedBy")
+  PCRHistory              PCRHistory[]
 }
 
 model Role {
@@ -637,13 +638,15 @@ model APMessage {
 }
 
 model PORequest {
-  uuid     String  @id @default(uuid())
-  revision String
-  changeId String  @unique // to be used for change request to IQX API
-  status   String  @default("PENDING")
-  action   String
-  iqxReqNo String? // IQX request number
-  reason   String? // for reject / withdrawn changes
+  uuid         String  @id @default(uuid())
+  revision     String
+  changeId     String  @unique // to be used for change request to IQX API
+  status       String  @default("PENDING")
+  action       String
+  iqxReqNo     String? // IQX request number
+  reason       String? // for reject / withdrawn changes
+  response     String  @default("PENDING") // PENDING, SUCCESS, FAILED
+  responseFile String?
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -653,10 +656,11 @@ model PORequest {
   createdBy String
   updatedBy String?
 
-  po            PODocument? @relation(fields: [poUuid], references: [uuid])
-  createdByUser User?       @relation("createdBy", fields: [createdBy], references: [uuid])
-  updatedByUser User?       @relation("updatedBy", fields: [updatedBy], references: [uuid])
+  po            PODocument?  @relation(fields: [poUuid], references: [uuid])
+  createdByUser User?        @relation("createdBy", fields: [createdBy], references: [uuid])
+  updatedByUser User?        @relation("updatedBy", fields: [updatedBy], references: [uuid])
   PORItem       PORItem[]
+  PCRHistory    PCRHistory[]
 }
 
 model PORItem {
@@ -675,6 +679,29 @@ model PORItem {
 
   PORDocument PORequest? @relation(fields: [porUuid], references: [uuid], onDelete: Cascade)
   POItem      POItem?    @relation(fields: [poItemUuid], references: [uuid])
+}
+
+// model for PORequest history
+model PCRHistory {
+  uuid        String                 @id @default(uuid())
+  description String
+  filename    String
+  action      PCRHistoryActionConfig
+
+  createdAt DateTime @default(now())
+
+  userUuid String?
+  porUuid  String
+
+  user User?      @relation(fields: [userUuid], references: [uuid])
+  por  PORequest? @relation(fields: [porUuid], references: [uuid])
+}
+
+enum PCRHistoryActionConfig {
+  Request
+  Withdrawn
+  Response
+  ChangeStatus
 }
 
 enum ConfigCreateInvoice {
