@@ -43,6 +43,9 @@ model User {
   Approver                Invoice[]                @relation("approver")
   emailWhitelistAuditLogs EmailWhitelistAuditLog[]
   AuditLog                AuditLog[]
+  CreatedPOR              PORequest[]              @relation("createdBy")
+  UpdatedPOR              PORequest[]              @relation("updatedBy")
+  PCRHistory              PCRHistory[]
 }
 
 model Role {
@@ -95,6 +98,7 @@ model Supplier {
   POADocument      POADocument[]
   POVersions       POVersion[]
   AuditLog         AuditLog[]
+  APMessage        APMessage[]
 }
 
 model SupplierAddress {
@@ -230,6 +234,7 @@ model PODocument {
   POFile        POFile[]
   POVersions    POVersion[]
   Invoices      Invoice[]
+  PORequest     PORequest[]
 }
 
 model POItem {
@@ -253,6 +258,11 @@ model POItem {
   PODocumentUuid String
   PODocument     PODocument    @relation(fields: [PODocumentUuid], references: [uuid])
   InvoiceLine    InvoiceLine[]
+
+  parentPoItemUuid String?
+  parentPoItem     POItem?   @relation("ParentChild", fields: [parentPoItemUuid], references: [uuid])
+  poItems          POItem[]  @relation("ParentChild")
+  PORItem          PORItem[]
 }
 
 model POADocument {
@@ -348,6 +358,14 @@ model Invoice {
   iqxRequestNo       String?
   lastUpdateDate     DateTime?
   dueDate            DateTime?
+  //NPS CSV
+  supplierInvoiceNo  String?
+  supplierId         String?
+  amount             Decimal?
+  plantId            String?
+  plantDescription   String?
+  submittedDate      DateTime?
+  billingDocType     String?
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
@@ -468,6 +486,7 @@ model Settings {
   buyerApprovalReminderDays         Int      @default(0)
   suppliersCanCreateInvoiceInPortal Boolean  @default(false)
   suppliersCanCreatePORInPortal     Boolean  @default(true)
+  masterVendorEmail                 String   @default("vendor.records@santos.com")
   updatedAt                         DateTime @updatedAt
 }
 
@@ -486,6 +505,7 @@ model POAuditLog {
   uuid        String  @id @default(uuid())
   event       String //created, updated, viewed, acknowledged, poa_csv_upload, poa_csv_error
   data        Json?
+  description String?
   userUuid    String?
   poUuid      String?
   revision    String?
@@ -567,7 +587,10 @@ model POVersionItem {
   freight                 Decimal? @db.Decimal(10, 4)
   supplierReference       String?
 
-  poVersion POVersion @relation(fields: [poVersionUuid], references: [uuid])
+  poVersion               POVersion       @relation(fields: [poVersionUuid], references: [uuid])
+  parentPoVersionItemUuid String?
+  parentPoVersionItem     POVersionItem?  @relation("ParentChild", fields: [parentPoVersionItemUuid], references: [uuid])
+  poVersionItems          POVersionItem[] @relation("ParentChild")
 }
 
 model EmailWhitelist {
@@ -604,12 +627,81 @@ model APMessage {
   attachments  String
   subject      String
   sender       String
-  code         String
+  code         String?
   account      String
   receivedDate DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  supplier Supplier? @relation(fields: [code], references: [accountNumber])
+}
+
+model PORequest {
+  uuid         String  @id @default(uuid())
+  revision     String
+  changeId     String  @unique // to be used for change request to IQX API
+  status       String  @default("PENDING")
+  action       String
+  iqxReqNo     String? // IQX request number
+  reason       String? // for reject / withdrawn changes
+  response     String  @default("PENDING") // PENDING, SUCCESS, FAILED
+  responseFile String?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastUpdate DateTime?
+
+  poUuid    String
+  createdBy String
+  updatedBy String?
+
+  po            PODocument?  @relation(fields: [poUuid], references: [uuid])
+  createdByUser User?        @relation("createdBy", fields: [createdBy], references: [uuid])
+  updatedByUser User?        @relation("updatedBy", fields: [updatedBy], references: [uuid])
+  PORItem       PORItem[]
+  PCRHistory    PCRHistory[]
+}
+
+model PORItem {
+  uuid              String   @id @default(uuid())
+  price             Decimal  @db.Decimal(10, 4)
+  quantity          Decimal  @db.Decimal(10, 4)
+  deleted           Boolean  @default(false)
+  deliveryCompleted Boolean? @default(false)
+
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  porUuid    String
+  poItemUuid String
+
+  PORDocument PORequest? @relation(fields: [porUuid], references: [uuid], onDelete: Cascade)
+  POItem      POItem?    @relation(fields: [poItemUuid], references: [uuid])
+}
+
+// model for PORequest history
+model PCRHistory {
+  uuid        String                 @id @default(uuid())
+  description String
+  filename    String
+  action      PCRHistoryActionConfig
+
+  createdAt DateTime @default(now())
+
+  userUuid String?
+  porUuid  String
+
+  user User?      @relation(fields: [userUuid], references: [uuid])
+  por  PORequest? @relation(fields: [porUuid], references: [uuid])
+}
+
+enum PCRHistoryActionConfig {
+  Request
+  Withdrawn
+  Response
+  ChangeStatus
 }
 
 enum ConfigCreateInvoice {
