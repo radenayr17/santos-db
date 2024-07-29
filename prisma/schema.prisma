@@ -682,7 +682,7 @@ model PORItem {
   poItemUuid String?
 
   PORDocument PORequest? @relation(fields: [porUuid], references: [uuid], onDelete: Cascade)
-  POItem      POItem?    @relation(fields: [poItemUuid], references: [uuid], onDelete: NoAction)
+  POItem      POItem?    @relation(fields: [poItemUuid], references: [uuid], onDelete: SetNull)
 }
 
 // model for PORequest history
