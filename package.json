@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
     "start": "npm run build && node dist/server.js",
+    "migrate:dev": "prisma migrate dev --create-only",
     "build": "tsc"
   },
   "keywords": [],

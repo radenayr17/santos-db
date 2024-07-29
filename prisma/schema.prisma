@@ -220,7 +220,7 @@ model PODocument {
   pfsTick            Boolean   @default(false)
   companyCode        String?
   supplierReference  String?
-  deleteCode         String? //D for deleted, L for Locked
+  deleteCode         String? //DELETED, LOCKED
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -254,6 +254,7 @@ model POItem {
   supplierDueDate         DateTime
   requisition             Int
   freight                 Decimal? @db.Decimal(10, 4)
+  deleteCode              String?  //DELETED, LOCKED
 
   PODocumentUuid String
   PODocument     PODocument    @relation(fields: [PODocumentUuid], references: [uuid])
@@ -305,7 +306,7 @@ model POAItem {
 
 model Invoice {
   uuid               String    @id @default(uuid())
-  invoiceNo          String
+  invoiceNo          String    
   type               String    @default("invoice") //invoice or credit
   subtype            String?
   orderNo            String
@@ -559,7 +560,7 @@ model POVersion {
   pfsTick            Boolean   @default(false)
   companyCode        String?
   supplierReference  String?
-  deleteCode         String? //D for deleted, L for Locked
+  deleteCode         String? //DELETED, LOCKED
 
   createdAt DateTime @default(now())
 
@@ -586,6 +587,7 @@ model POVersionItem {
   requisition             Int
   freight                 Decimal? @db.Decimal(10, 4)
   supplierReference       String?
+  deleteCode              String?  //DELETED, LOCKED
 
   poVersion               POVersion       @relation(fields: [poVersionUuid], references: [uuid])
   parentPoVersionItemUuid String?
