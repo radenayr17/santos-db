@@ -1,0 +1,10 @@
+-- DropForeignKey
+ALTER TABLE `PORItem` DROP FOREIGN KEY `PORItem_poItemUuid_fkey`;
+
+-- AlterTable
+ALTER TABLE `PORItem` ADD COLUMN `description` VARCHAR(191) NOT NULL DEFAULT '',
+    ADD COLUMN `itemNo` VARCHAR(191) NOT NULL DEFAULT '',
+    MODIFY `poItemUuid` VARCHAR(191) NULL;
+
+-- AddForeignKey
+ALTER TABLE `PORItem` ADD CONSTRAINT `PORItem_poItemUuid_fkey` FOREIGN KEY (`poItemUuid`) REFERENCES `POItem`(`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE;
