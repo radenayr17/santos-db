@@ -652,6 +652,8 @@ model PORequest {
   reason       String? // for reject / withdrawn changes
   response     String  @default("PENDING") // PENDING, SUCCESS, FAILED
   responseFile String?
+  pcrStatus    String  @default("")
+  isWithdrawn  Boolean @default(false)
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
