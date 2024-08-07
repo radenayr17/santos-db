@@ -222,6 +222,7 @@ model PODocument {
   companyCode        String?
   supplierReference  String?
   deleteCode         String? //DELETED, LOCKED
+  uploadEdiResponse  String?   @default("") //EDI upload error message
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -562,6 +563,7 @@ model POVersion {
   companyCode        String?
   supplierReference  String?
   deleteCode         String? //DELETED, LOCKED
+  uploadEdiResponse  String?   @default("") //EDI upload error message
 
   createdAt DateTime @default(now())
 
