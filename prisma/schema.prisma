@@ -307,68 +307,69 @@ model POAItem {
 }
 
 model Invoice {
-  uuid               String    @id @default(uuid())
-  invoiceNo          String
-  type               String    @default("invoice") //invoice or credit
-  subtype            String?
-  orderNo            String
-  orgInvNo           String?
-  orgInvDate         DateTime?
-  settlementDate     DateTime?
-  remitToCode        String    @default("")
-  vendorNo           String?
-  channel            String?
-  submittedby        String?
-  invoiceDate        DateTime?
-  netTotal           Decimal
-  totalTax           Decimal
-  total              Decimal
-  currency           String
-  taxCode            String
-  freight            String?
-  freightTax         String?
-  freightCurrency    String?
-  freightTaxCode     String?
-  addCharges         Decimal?
-  addChargesTax      Decimal?
-  addChargesTaxCode  String?
-  addChargesCurrency String?
-  whtAmount          Decimal?
-  whtBase            Decimal?
-  whtCountry         String?
-  whtTaxType         String?
-  whtTaxCode         String?
-  whtTaxCodeDesc     String?
-  sesProvided        Boolean?
-  costProvided       Boolean?
-  userUuid           String?
-  companyCode        String?
-  creditNoteNo       String    @default("")
-  businessNo         String    @default("") //business number
-  bsb                String    @default("")
-  acn                String    @default("") //account number
-  freightStatus      String    @default("PENDING") //PENDING, APPROVED, REJECTED
-  freightUpdateAt    DateTime?
-  isDraft            Boolean   @default(false)
+  uuid                  String    @id @default(uuid())
+  invoiceNo             String
+  type                  String    @default("invoice") //invoice or credit
+  subtype               String?
+  orderNo               String
+  orgInvNo              String?
+  orgInvDate            DateTime?
+  settlementDate        DateTime?
+  remitToCode           String    @default("")
+  vendorNo              String?
+  channel               String?
+  submittedby           String?
+  invoiceDate           DateTime?
+  netTotal              Decimal
+  totalTax              Decimal
+  total                 Decimal
+  currency              String
+  taxCode               String
+  freight               String?
+  freightTax            String?
+  freightCurrency       String?
+  freightTaxCode        String?
+  addCharges            Decimal?
+  addChargesTax         Decimal?
+  addChargesTaxCode     String?
+  addChargesCurrency    String?
+  whtAmount             Decimal?
+  whtBase               Decimal?
+  whtCountry            String?
+  whtTaxType            String?
+  whtTaxCode            String?
+  whtTaxCodeDesc        String?
+  sesProvided           Boolean?
+  costProvided          Boolean?
+  userUuid              String?
+  companyCode           String?
+  creditNoteNo          String    @default("")
+  businessNo            String    @default("") //business number
+  bsb                   String    @default("")
+  acn                   String    @default("") //account number
+  freightStatus         String    @default("PENDING") //PENDING, APPROVED, REJECTED
+  freightUpdateAt       DateTime?
+  freightApprovalReason String?   @default("")
+  isDraft               Boolean   @default(false)
   //SAP CSV
-  remitNo            String?
-  remitDate          DateTime?
-  remitStatus        String?
-  remitAmount        Decimal?
+  remitNo               String?
+  remitDate             DateTime?
+  remitStatus           String?
+  remitAmount           Decimal?
   //IQX CSV
-  rejectComment      String?
-  sapBillingNo       String?
-  iqxRequestNo       String?
-  lastUpdateDate     DateTime?
-  dueDate            DateTime?
+  rejectComment         String?
+  sapBillingNo          String?
+  iqxRequestNo          String?
+  lastUpdateDate        DateTime?
+  dueDate               DateTime?
   //NPS CSV
-  supplierInvoiceNo  String?
-  supplierId         String?
-  amount             Decimal?
-  plantId            String?
-  plantDescription   String?
-  submittedDate      DateTime?
-  billingDocType     String?
+  supplierInvoiceNo     String?
+  supplierId            String?
+  amount                Decimal?
+  plantId               String?
+  plantDescription      String?
+  submittedDate         DateTime?
+  billingDocType        String?
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
