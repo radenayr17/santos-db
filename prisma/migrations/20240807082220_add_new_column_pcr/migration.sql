@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `PORequest` ADD COLUMN `isWithdrawn` BOOLEAN NOT NULL DEFAULT false,
+    ADD COLUMN `pcrStatus` VARCHAR(191) NOT NULL DEFAULT '';
