@@ -206,6 +206,7 @@ model PODocument {
   revisionDate       DateTime?
   currency           String
   procurementContact String
+  procurementDetail  Json?
   requester          String
   agreementNo        String
   paymentTerms       String?
@@ -553,6 +554,7 @@ model POVersion {
   revisionDate       DateTime?
   currency           String
   procurementContact String
+  procurementDetail  Json?
   requester          String
   agreementNo        String
   paymentTerms       String?
@@ -679,6 +681,7 @@ model PORItem {
   deliveryCompleted Boolean? @default(false)
   description       String   @default("")
   itemNo            String   @default("")
+  unit              String   @default("")
 
   dueDate   DateTime?
   createdAt DateTime  @default(now())
