@@ -223,7 +223,8 @@ model PODocument {
   companyCode        String?
   supplierReference  String?
   deleteCode         String? //DELETED, LOCKED
-  uploadEdiResponse  String?   @default("") //EDI upload error message
+  ediUploadStatus    String?   @default("")
+  ediUploadResponse  String?   @default("")
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -309,6 +310,7 @@ model POAItem {
 
 model Invoice {
   uuid                  String    @id @default(uuid())
+  invoiceAPId           String    @unique
   invoiceNo             String
   type                  String    @default("invoice") //invoice or credit
   subtype               String?
@@ -492,6 +494,7 @@ model Settings {
   suppliersCanCreateInvoiceInPortal Boolean  @default(false)
   suppliersCanCreatePORInPortal     Boolean  @default(true)
   masterVendorEmail                 String   @default("vendor.records@santos.com")
+  exportPORetryCount                Int      @default(3)
   updatedAt                         DateTime @updatedAt
 }
 
@@ -566,7 +569,8 @@ model POVersion {
   companyCode        String?
   supplierReference  String?
   deleteCode         String? //DELETED, LOCKED
-  uploadEdiResponse  String?   @default("") //EDI upload error message
+  ediUploadStatus    String?   @default("")
+  ediUploadResponse  String?   @default("")
 
   createdAt DateTime @default(now())
 
