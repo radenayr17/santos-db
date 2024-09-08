@@ -253,10 +253,10 @@ model POItem {
   unit                    String
   unitPrice               Decimal
   discount                Decimal
-  extendedPrice           Decimal
+  extendedPrice           Decimal?
   finalDestination        String
   supplierDueDate         DateTime
-  requisition             Int
+  requisition             Int?
   freight                 Decimal? @db.Decimal(10, 4)
   deleteCode              String? //DELETED, LOCKED
 
@@ -591,10 +591,10 @@ model POVersionItem {
   unit                    String
   unitPrice               Decimal
   discount                Decimal
-  extendedPrice           Decimal
+  extendedPrice           Decimal?
   finalDestination        String
   supplierDueDate         DateTime
-  requisition             Int
+  requisition             Int?
   freight                 Decimal? @db.Decimal(10, 4)
   supplierReference       String?
   deleteCode              String? //DELETED, LOCKED
