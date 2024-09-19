@@ -373,6 +373,7 @@ model Invoice {
   plantDescription      String?
   submittedDate         DateTime?
   billingDocType        String?
+  paymentTerms          String?   @default("")
 
   createdDate        DateTime       @default(now())
   createdFrom        String? // AP Portal, Supplier Platform
