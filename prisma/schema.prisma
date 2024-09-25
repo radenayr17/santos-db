@@ -727,3 +727,11 @@ enum ConfigCreateInvoice {
   AllowToCreate
   DoNotAllowToCreate
 }
+
+model ReadReceipt {
+  uuid        String    @id @default(uuid())
+  type        String    
+  lastReadAt  DateTime  @default(now()) 
+  relatedId   String   
+  userUuid    String
+}
