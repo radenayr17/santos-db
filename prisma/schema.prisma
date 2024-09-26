@@ -662,6 +662,7 @@ model PORequest {
   responseFile String?
   pcrStatus    String  @default("")
   isWithdrawn  Boolean @default(false)
+  fileDeleted Boolean @default(false)
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
