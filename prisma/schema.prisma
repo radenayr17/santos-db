@@ -324,8 +324,8 @@ model Invoice {
   submittedby           String?
   invoiceDate           DateTime?
   netTotal              Decimal
-  totalTax              Decimal
-  total                 Decimal
+  totalTax              Decimal?
+  total                 Decimal?
   currency              String
   taxCode               String
   freight               String?
