@@ -100,6 +100,7 @@ model Supplier {
   POVersions       POVersion[]
   AuditLog         AuditLog[]
   APMessage        APMessage[]
+  invoices         Invoice[]
 }
 
 model SupplierAddress {
@@ -132,15 +133,16 @@ model BankingData {
 }
 
 model Comment {
-  uuid        String  @id @default(uuid())
-  authorUuid  String
-  message     String
-  visibility  String  @default("internal") //internal, external
-  POUuid      String?
-  revision    String? @default("")
-  invoiceUuid String?
+  uuid           String  @id @default(uuid())
+  authorUuid     String?
+  message        String
+  visibility     String  @default("internal") //internal, external
+  POUuid         String?
+  revision       String? @default("")
+  invoiceUuid    String?
+  externalAuthor String?
 
-  author        User           @relation(fields: [authorUuid], references: [uuid])
+  author        User?          @relation(fields: [authorUuid], references: [uuid])
   PODocument    PODocument?    @relation(fields: [POUuid], references: [uuid])
   notifications Notification[]
   attachments   Attachment[]
@@ -390,6 +392,7 @@ model Invoice {
   exported           Boolean?       @default(false)
   meta               Json?          @default(dbgenerated())
   po                 PODocument?    @relation(fields: [poUuid], references: [uuid])
+  supplier           Supplier?      @relation(fields: [supplierId], references: [uuid])
   approver           User?          @relation("approver", fields: [userUuid], references: [uuid])
   InvoiceLine        InvoiceLine[]
   comments           Comment[]
@@ -662,7 +665,7 @@ model PORequest {
   responseFile String?
   pcrStatus    String  @default("")
   isWithdrawn  Boolean @default(false)
-  fileDeleted Boolean @default(false)
+  fileDeleted  Boolean @default(false)
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -730,9 +733,9 @@ enum ConfigCreateInvoice {
 }
 
 model ReadReceipt {
-  uuid        String    @id @default(uuid())
-  type        String    
-  lastReadAt  DateTime  @default(now()) 
-  relatedId   String   
-  userUuid    String
+  uuid       String   @id @default(uuid())
+  type       String
+  lastReadAt DateTime @default(now())
+  relatedId  String
+  userUuid   String
 }
